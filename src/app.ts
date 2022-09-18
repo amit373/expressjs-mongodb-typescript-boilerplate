@@ -4,12 +4,12 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import helmet from 'helmet';
 import hpp from 'hpp';
-import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import mongoSanitize from 'express-mongo-sanitize';
 import rateLimit from 'express-rate-limit';
 import { xss } from 'express-xss-sanitizer';
 import { join } from 'path';
+import { Server } from 'http';
 
 import { config } from '@app/config';
 import { errorMiddleware } from '@app/middlewares';
@@ -19,7 +19,7 @@ import { loggerService } from '@app/libs';
 import { ErrorMessage, RoutesConstants } from '@app/constants';
 import { AuthRoute, IndexRoute, UsersRoute } from '@app/routes';
 import { NotFoundException } from '@app/exceptions';
-import { Server } from 'http';
+import { swaggerSpecs } from '@app/utils';
 
 process.on('uncaughtException', (err: Error) => {
   console.log(ErrorMessage.UNCAUGHT_EXCEPTION);
@@ -68,7 +68,7 @@ class App {
     });
   }
 
-  public getServer(): Application {
+  public getServerInstance(): Application {
     return this.app;
   }
 
@@ -98,50 +98,7 @@ class App {
   }
 
   private initializeSwagger(): void {
-    const swaggerDefinition = {
-      swagger: '2.0',
-      info: {
-        title: 'REST API',
-        version: '1.0.0',
-        description: 'Example docs',
-      },
-      host: `localhost:${config.PORT}`,
-      basePath: config.BASE_URL,
-      tags: [
-        {
-          name: 'Health',
-          description: '',
-        },
-        {
-          name: 'Auth',
-          description: 'API for auth',
-        },
-        {
-          name: 'Users',
-          description: 'API for users',
-        },
-      ],
-      schemes: ['http', 'https'],
-      securityDefinitions: {
-        bearerAuth: {
-          type: 'apiKey',
-          name: 'Authorization',
-          scheme: 'bearer',
-          bearerFormat: 'JWT',
-          in: 'header',
-        },
-      },
-      consumes: ['application/json'],
-      produces: ['application/json'],
-    };
-
-    const options = {
-      swaggerDefinition,
-      apis: ['**/*.ts'],
-    };
-
-    const specs: object = swaggerJSDoc(options);
-    this.app.use(config.SWAGGER_URL, swaggerUi.serve, swaggerUi.setup(specs));
+    this.app.use(config.SWAGGER_URL, swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
   }
 
   private initializeErrorHandling(): void {
