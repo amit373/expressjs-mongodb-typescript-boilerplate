@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
-import { createLogger, format, Logform, transports } from 'winston';
+import { createLogger, format, transports } from 'winston';
 import winstonDaily from 'winston-daily-rotate-file';
 import { config } from '@app/config';
 import { utilities } from './logger.utilities';
@@ -13,7 +13,7 @@ if (!existsSync(logDir)) {
 }
 
 // Define log format
-const logFormat: Logform.Format = format.printf(({ timestamp, level, message }) => `${timestamp} ${level}: ${message}`);
+// const logFormat = format.printf(({ timestamp, level, message }) => `${timestamp} ${level}: ${message}`);
 
 /*
  * Log Level
