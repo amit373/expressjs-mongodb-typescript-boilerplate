@@ -1,4 +1,0 @@
-{
-  "*.ts": ["npm run lint:fix"],
-  "*.{json,js}": ["npm run format"]
-}
